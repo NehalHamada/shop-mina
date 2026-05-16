@@ -1,5 +1,9 @@
 import axios from "axios";
-import { BASE_URL, Products_Per_Page } from "../../../constants/api";
+import {
+  BASE_URL,
+  Products_Per_Page,
+  Products_Total,
+} from "../../../constants/api";
 import type { Product, ProductResponse } from "../types/product.types";
 
 const api = axios.create({
@@ -9,10 +13,17 @@ const api = axios.create({
 export const productsApi = {
   getProducts: async (page: number) => {
     const skip = (page - 1) * Products_Per_Page;
-    const response = await api.get<ProductResponse>(
-      `/products?limit=${Products_Per_Page} & skip= ${skip}`,
-    );
-    return response.data;
+    const response = await api.get<ProductResponse>("/products", {
+      params: {
+        limit: Products_Per_Page,
+        skip,
+      },
+    });
+
+    return {
+      ...response.data,
+      total: Products_Total,
+    };
   },
 
   getProductsById: async (id: number) => {
